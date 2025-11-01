@@ -50,6 +50,7 @@ dependencies {
     minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2859'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     testCompile "com.nhaarman:mockito-kotlin:1.5.0"
+    testCompile 'junit:junit:4.13.2'
 }
 
 jar {
