@@ -14,13 +14,11 @@ import gnu.trove.map.hash.TObjectIntHashMap;
 import ivorius.mcopts.MCOpts;
 import ivorius.mcopts.commands.parameters.expect.Expect;
 import net.minecraft.command.CommandException;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.StreamTokenizer;
-import java.io.StringReader;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -83,7 +81,7 @@ public class Parameters
     public static Stream<Pair<String, String>> parse(String[] args)
     {
         String full = String.join(" ", args);
-        StringReader reader = new StringReader(full);
+        TrackingStringReader reader = new TrackingStringReader(full);
 
         StreamTokenizer tokenizer = new StreamTokenizer(reader);
         tokenizer.resetSyntax();
@@ -99,7 +97,7 @@ public class Parameters
         {
             while (tokenizer.nextToken() != StreamTokenizer.TT_EOF)
             {
-                int idx = Math.min(index(reader), full.length());
+                int idx = Math.min(reader.getCursor(), full.length());
 
                 String arg = tokenizer.sval;
                 String argRaw = full.substring(lastIndex, idx);
@@ -133,20 +131,6 @@ public class Parameters
 
         return IntStream.range(0, parsed.size())
                 .mapToObj(i -> Pair.of(raw.get(i), parsed.get(i)));
-    }
-
-    public static int index(StringReader reader)
-    {
-        try
-        {
-            return ReflectionHelper.findField(StringReader.class, "next").getInt(reader);
-        }
-        catch (IllegalAccessException e)
-        {
-            MCOpts.logger.error("Error trying to get next", e);
-        }
-
-        return 0;
     }
 
     @Nonnull
